@@ -44,8 +44,11 @@ for i = 1:numel(t)-1
     tankFlow(i,iActTank) = fmincon(problem)';
     tankQuantity(i+1,:) = tankQuantity(i,:);
     tankQuantity(i+1,:) = tankQuantity(i+1,:) - tankFlow(i,:)/oilDensity;
-    step(actTankStateflow,'tankQuantity',tankQuantity(i+1,:));
-    iActTank = actTankStateflow.actTank;
+%     step(actTankStateflow,'tankQuantity',tankQuantity(i+1,:));
+%     iActTank = actTankStateflow.actTank;
+    if rem(i,61) == 0
+        iActTank = changeTank(tankQuantity(i+1,:),tankInitQuantity);
+    end
     actTank(i+1,:) = iActTank;
     disp(i);
 end
