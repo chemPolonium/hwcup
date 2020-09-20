@@ -17,6 +17,8 @@ tankQuantityBound = [1 -1 0 0 0 0;0 0 0 0 -1 1];
 totalCg = zeros(size(t,1),3);
 totalCg(1,:) = getTotalCg(tankQuantity(1,:),0,tankPosi,tankSize,aircraftMass,oilDensity)';
 
+tankSwitchPoint = [2500 3500 4500 5200];
+
 tic
 
 for i = 1:numel(t)-1
@@ -44,7 +46,7 @@ for i = 1:numel(t)-1
     iTankQuantity = tankQuantity(i,:) - tankFlow(i,:)/oilDensity;
     iTankQuantity([2 5]) = iTankQuantity([2 5]) + tankFlow(i,[1 6])/oilDensity;
     tankQuantity(i+1,:) = iTankQuantity;
-    if any(iTankQuantity(iActTank) < 0.01)
+    if ismember(i,tankSwitchPoint) || any(iTankQuantity(iActTank) < 0.01)
         iActTank = quest2changeTank(tankQuantity(i+1,:),tankInitQuantity);
     end
     actTank(i+1,:) = iActTank;
@@ -56,5 +58,7 @@ toc
 for i = 1:numel(t)
     totalCg(i,:) = getTotalCg(tankQuantity(i,:),0,tankPosi,tankSize,aircraftMass,oilDensity)';
 end
+
+save quest2result.mat totalCg tankFlow tankQuantity actTank
 
 quest2plot;

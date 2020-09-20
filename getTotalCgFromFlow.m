@@ -10,6 +10,6 @@ function totalCg = getTotalCgFromFlow(...
 tankFlow = zeros(1,6);
 tankFlow(actTank) = actTankFlow;
 tankFlow(:,[2 5]) = tankFlow(:,[2 5]) - tankFlow(:,[1 6]);
-tankQuantity = tankQuantity - tankFlow;
+tankQuantity = tankQuantity - tankFlow/oilDensity;
 totalCg = getTotalCg(tankQuantity,aircraftPitch,tankPosi,tankSize,aircraftMass,oilDensity);
 end
