@@ -2,25 +2,25 @@ clear,clc;
 load('tankData.mat');
 load('quest4.mat');
 
-problem.objective = @(x)norm(getTotalCg(...
-    x,...
-    0,...
-    tankPosi,...
-    tankSize,...
-    aircraftMass,...
-    oilDensity));
-problem.x0 = tankInitQuantity;
-problem.lb = zeros(6,1);
-problem.ub = tankMaxQuantity';
-problem.Aineq = zeros(1,6) - 1;
-problem.bineq = -sum(aircraftFlow)/oilDensity;
-problem.Aeq = [];
-problem.Beq = [];
-problem.nonlcon = [];
-problem.solver = 'fmincon';
-problem.options = optimoptions('fmincon','Display','none');
-
-[tankInitQuantity,fval] = fmincon(problem);
+% problem.objective = @(x)norm(getTotalCg(...
+%     x,...
+%     0,...
+%     tankPosi,...
+%     tankSize,...
+%     aircraftMass,...
+%     oilDensity));
+% problem.x0 = tankInitQuantity;
+% problem.lb = zeros(6,1);
+% problem.ub = tankMaxQuantity';
+% problem.Aineq = zeros(1,6) - 1;
+% problem.bineq = -sum(aircraftFlow)/oilDensity;
+% problem.Aeq = [];
+% problem.Beq = [];
+% problem.nonlcon = [];
+% problem.solver = 'fmincon';
+% problem.options = optimoptions('fmincon','Display','none');
+% 
+% [tankInitQuantity,fval] = fmincon(problem);
 
 iActTank = logical([0 0 0 1 1 1]);
 
@@ -80,6 +80,6 @@ for i = 1:numel(t)
     totalCg(i,:) = getTotalCg(tankQuantity(i,:),aircraftPitch(i),tankPosi,tankSize,aircraftMass,oilDensity)';
 end
 
-save quest4result.mat totalCg tankFlow tankQuantity actTank tankInitQuantity
+save quest4result.mat totalCg tankFlow tankQuantity actTank
 
 quest4plot;
