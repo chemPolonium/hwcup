@@ -12,5 +12,8 @@ end
 
 close all
 plot(t,totalCg,'LineWidth',1.5);
-legend('x','y','z');
+title('center of gravity (CG)')
+legend('x','y','z')
+xlabel('time / second');
+ylabel('CG position / m');
 exportgraphics(gca,'quest1cg.png');
