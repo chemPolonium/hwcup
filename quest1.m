@@ -10,5 +10,7 @@ for i = 1:numel(t)
         aircraftPitch(i),tankPosi,tankSize,aircraftMass,oilDensity)';
 end
 
-plot(t,totalCg);
+close all
+plot(t,totalCg,'LineWidth',1.5);
 legend('x','y','z');
+exportgraphics(gca,'quest1cg.png');

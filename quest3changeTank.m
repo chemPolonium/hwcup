@@ -1,8 +1,9 @@
-function actTank = changeTank(tankQuantity,tankInitQuantity)
-tankQuantityPercent = tankQuantity ./ tankInitQuantity;
+function actTank = quest3changeTank(tankQuantity)
+% function actTank = quest3changeTank(tankQuantity,tankInitQuantity)
+% tankQuantityPercent = tankQuantity ./ tankInitQuantity;
 actTank = false(1,6);
-[~,tankInd] = sort(tankQuantityPercent,'descend');
-% [~,tankInd] = sort(tankQuantity,'descend');
+% [~,tankInd] = sort(tankQuantityPercent,'descend');
+[~,tankInd] = sort(tankQuantity,'descend');
 actTankNum = 0;
 actEngineTankNum = 0;
 for i = 1:6
