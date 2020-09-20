@@ -17,7 +17,7 @@ tankQuantityBound = [1 -1 0 0 0 0;0 0 0 0 -1 1];
 totalCg = zeros(size(t,1),3);
 totalCg(1,:) = getTotalCg(tankQuantity(1,:),0,tankPosi,tankSize,aircraftMass,oilDensity)';
 
-tankSwitchPoint = [2500 3500 4500 5200];
+tankSwitchPoint = [3000 3500 4500 5200];
 
 tic
 
@@ -30,7 +30,7 @@ for i = 1:numel(t)-1
         tankPosi,...
         tankSize,...
         aircraftMass,...
-        oilDensity)' - aircraftIdealCg(min(i+300,7200),:));
+        oilDensity)' - aircraftIdealCg(min(i+1,7200),:));
     problem.x0 = zeros(sum(iActTank),1) + 1/6*aircraftFlow(i);
     problem.lb = zeros(sum(iActTank),1) + 0.0001;
     problem.ub = tankMaxFlow(iActTank);
@@ -41,7 +41,7 @@ for i = 1:numel(t)-1
     problem.Beq = aircraftFlow(i);
     problem.nonlcon = [];
     problem.solver = 'fmincon';
-    problem.options = optimoptions('fmincon','Display','none');
+    problem.options = optimoptions('fmincon','Display','none','Algorithm','sqp');
     tankFlow(i,iActTank) = fmincon(problem)';
     iTankQuantity = tankQuantity(i,:) - tankFlow(i,:)/oilDensity;
     iTankQuantity([2 5]) = iTankQuantity([2 5]) + tankFlow(i,[1 6])/oilDensity;
