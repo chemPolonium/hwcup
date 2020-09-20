@@ -27,7 +27,7 @@ problem.nonlcon = [];
 problem.solver = 'fmincon';
 problem.options = optimoptions('fmincon','Display','none','Algorithm','sqp');
 
-tankInitQuantity = fmincon(problem)';
+tankInitQuantity = fmincon(problem);
 
 iActTank = logical([1 0 0 1 1 0]);
 engineTank = logical([0 1 1 1 1 0]);
