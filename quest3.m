@@ -86,6 +86,10 @@ for i = 1:numel(t)
     totalCg(i,:) = getTotalCg(tankQuantity(i,:),0,tankPosi,tankSize,aircraftMass,oilDensity)';
 end
 
-save quest3result.mat totalCg tankFlow tankQuantity actTank tankInitQuantity
+totalCgError = vecnorm(totalCg - aircraftIdealCg,2,2);
 
-quest3plot;
+maxTotalCgError = max(totalCgError);
+
+save quest3result.mat totalCg tankFlow tankQuantity actTank tankInitQuantity totalCgError maxTotalCgError
+
+quest3plot
