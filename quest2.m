@@ -2,23 +2,22 @@ clear,clc;
 load('tankData.mat');
 load('quest2.mat');
 
-iActTank = logical([0 1 1 0 0 0]);
+iActTank = logical([1 1 0 1 0 0]);
 engineTank = logical([0 1 1 1 1 0]);
-% tankPosiGain = -tankPosi;
-% tankPosiGain(:,[1 6]) = tankPosiGain(:,[1 6]) - tankPosiGain(:,[2 5]);
-% 
-% actTankPosiGain = tankPosiGain(actTank);
-% actTankMaxFlow = tankMaxFlow(actTank);
 
 [tankFlow,tankQuantity] = deal(zeros(size(t,1),6));
 actTank = false(size(t,1),6);
 tankQuantity(1,:) = tankInitQuantity;
 actTank(1,:) = iActTank;
 
-actTankStateflow = quest2chart('actTank',iActTank,'tankQuantity',tankInitQuantity);
+tankQuantityBound = [1 -1 0 0 0 0;0 0 0 0 -1 1];
+
+% actTankStateflow = quest2chart('actTank',iActTank,'tankQuantity',tankInitQuantity);
 
 totalCg = zeros(size(t,1),3);
 totalCg(1,:) = getTotalCg(tankQuantity(1,:),0,tankPosi,tankSize,aircraftMass,oilDensity)';
+
+tic
 
 for i = 1:numel(t)-1
     problem.objective = @(x)norm(getTotalCgFromFlow(...
@@ -29,12 +28,12 @@ for i = 1:numel(t)-1
         tankPosi,...
         tankSize,...
         aircraftMass,...
-        oilDensity)');
-    problem.x0 = ones(sum(iActTank),1)/6*aircraftFlow(i);
-    problem.lb = zeros(sum(iActTank),1);
+        oilDensity)' - aircraftIdealCg(min(i+300,7200),:));
+    problem.x0 = zeros(sum(iActTank),1) + 1/6*aircraftFlow(i);
+    problem.lb = zeros(sum(iActTank),1) + 0.0001;
     problem.ub = tankMaxFlow(iActTank);
-    problem.Aineq = [];
-    problem.bineq = [];
+    problem.Aineq = tankQuantityBound(:,iActTank);
+    problem.bineq = [tankMaxQuantity(2) - tankQuantity(i,2);tankMaxQuantity(5) - tankQuantity(i,5)];
     actEngineTank = iActTank & engineTank;
     problem.Aeq = double(actEngineTank(iActTank));
     problem.Beq = aircraftFlow(i);
@@ -42,17 +41,20 @@ for i = 1:numel(t)-1
     problem.solver = 'fmincon';
     problem.options = optimoptions('fmincon','Display','none');
     tankFlow(i,iActTank) = fmincon(problem)';
-    tankQuantity(i+1,:) = tankQuantity(i,:);
-    tankQuantity(i+1,:) = tankQuantity(i+1,:) - tankFlow(i,:)/oilDensity;
-%     step(actTankStateflow,'tankQuantity',tankQuantity(i+1,:));
-%     iActTank = actTankStateflow.actTank;
-    if rem(i,61) == 0
+    iTankQuantity = tankQuantity(i,:) - tankFlow(i,:)/oilDensity;
+    iTankQuantity([2 5]) = iTankQuantity([2 5]) + tankFlow(i,[1 6])/oilDensity;
+    tankQuantity(i+1,:) = iTankQuantity;
+    if any(iTankQuantity(iActTank) < 0.01)
         iActTank = changeTank(tankQuantity(i+1,:),tankInitQuantity);
     end
     actTank(i+1,:) = iActTank;
     disp(i);
 end
 
+toc
+
 for i = 1:numel(t)
     totalCg(i,:) = getTotalCg(tankQuantity(i,:),0,tankPosi,tankSize,aircraftMass,oilDensity)';
 end
+
+quest2plot;
